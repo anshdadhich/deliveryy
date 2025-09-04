@@ -1,65 +1,87 @@
 import { NextResponse } from "next/server";
-import { connectDB, SHIPMENTS_DELAYED_COLLECTION } from "@/lib/mongo";
+import { connectDB, SHIPMENTS_COLLECTION } from "@/lib/mongo";
+import * as XLSX from "xlsx";
+import { Document } from "mongodb";
 
-interface DelayedShipment {
-  delay?: string | number;
-  severity?: "low" | "medium" | "high" | "LOW" | "HIGH" | "MEDIUM" | "Low" | "Medium" | "High";
-  EDD?: string | Date;
-  [key: string]: string | number | boolean | Date | object | null | undefined;
+const SHIPMENT_WEBHOOK_URL = process.env.SHIPMENT_WEBHOOK_URL as string;
+
+interface ShipmentRow extends Document {
+  [key: string]: string | number | undefined;
 }
 
-interface StatsResponse {
-  total: number;
-  severityCounts: {
-    low: number;
-    medium: number;
-    high: number;
-  };
-  avgDelay: number;
-  delayedShipments: number;
-}
-
-export async function GET() {
+export async function POST(req: Request) {
   try {
+    const formData = await req.formData();
+    const file = formData.get("file") as File | null;
+
+    if (!file) {
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+    }
+
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    const workbook = XLSX.read(buffer, { type: "buffer" });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+
+    const rows = XLSX.utils
+      .sheet_to_json<ShipmentRow>(sheet, {
+        raw: true,
+        defval: "",
+      })
+      .filter((row) => Object.keys(row).length > 0);
+
+    const dateColumns = ["Date", "ShipmentDate", "DeliveryDate"];
+
+    const cleanedRows = rows.map((row) => {
+      Object.keys(row).forEach((key) => {
+        const value = row[key];
+        if (dateColumns.includes(key) && typeof value === "number") {
+          try {
+            row[key] = XLSX.SSF.format("dd/mm/yyyy", value);
+          } catch {
+            row[key] = value.toString();
+          }
+        } else if (dateColumns.includes(key) && typeof value === "string") {
+          const match = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+          if (match) {
+            let [_, d, m, y] = match;
+            if (y.length === 2) y = "20" + y;
+            row[key] = `${d.padStart(2, "0")}/${m.padStart(2, "0")}/${y}`;
+          }
+        }
+      });
+      return row;
+    });
+
     const client = await connectDB();
     const db = client.db();
-    const collection = db.collection<DelayedShipment>(SHIPMENTS_DELAYED_COLLECTION);
+    const collection = db.collection<ShipmentRow>(SHIPMENTS_COLLECTION);
 
-    const shipments = await collection.find({}).toArray();
-    const total = shipments.length;
+    await collection.insertMany(cleanedRows);
 
-    const severityCounts = {
-      low: shipments.filter((s) => s.severity.toLocaleLowerCase() === "low").length,
-      medium: shipments.filter((s) => s.severity.toLocaleLowerCase() === "medium").length,
-      high: shipments.filter((s) => s.severity.toLocaleLowerCase() === "high").length,
-    };
+    setTimeout(async () => {
+      try {
+        await fetch(SHIPMENT_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ fileName: file.name }),
+        });
+        console.log(`Webhook triggered for file: ${file.name}`);
+      } catch (err: unknown) {
+        console.error("❌ Webhook trigger failed:", err);
+      }
+    }, 8000);
 
-    const avgDelay =
-      total > 0
-        ? parseFloat(
-            (
-              shipments.reduce((sum, s) => sum + (parseInt(s.delay as string) || 0), 0) /
-              total
-            ).toFixed(2)
-          )
-        : 0;
-
-    const delayedShipments = shipments.filter((s) => {
-      if (!s.EDD) return false;
-      const eddDate = new Date(s.EDD);
-      return eddDate < new Date();
-    }).length;
-
-    const response: StatsResponse = {
-      total,
-      severityCounts,
-      avgDelay,
-      delayedShipments,
-    };
-
-    return NextResponse.json(response);
+    return NextResponse.json({
+      message: `Uploaded ${rows.length} records successfully`,
+      count: rows.length,
+      fileName: file.name,
+      webhookScheduled: true,
+    });
   } catch (err: unknown) {
-    console.error("❌ Fetch error (stats):", err);
+    console.error("❌ Error in uploading the file", err);
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
