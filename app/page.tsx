@@ -283,6 +283,11 @@ export default function Home() {
                 </div>
 
                 <div className="flex justify-between">
+                    <p className="font-semibold text-gray-700">Days Delayed:</p>
+                    <p className="text-gray-900">{shipment.delay ?? "-"}</p>
+                </div>
+
+                <div className="flex justify-between">
                   <p className="font-semibold text-gray-700">Ecom Status:</p>
                   <p
                     className={`px-2 py-1 rounded-md font-medium ${
@@ -297,11 +302,6 @@ export default function Home() {
                     {shipment.EcomStatus ?? "-"}
                   </p>
                 </div>
-                
-                 <div className="flex justify-between">
-                    <p className="font-semibold text-gray-700">Days Delayed:</p>
-                    <p className="text-gray-900">{shipment.delay ?? "-"}</p>
-                  </div>
                 
               </div>
             </Card>
