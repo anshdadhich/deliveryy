@@ -344,7 +344,12 @@ export default function Home() {
                   }
 
                   return (
-                    <div key={key} className={`px-4 py-3 ${keyLower === "emailreply" ? "mb-4" : ""}`}>
+                    <div
+                      key={key}
+                      className={`px-4 py-3 hover:bg-gray-200 transition-colors  ${
+                        keyLower === "emailreply" ? "mb-4" : ""
+                      }`}
+                    >
                       {!isLong ? (
                         <div className="flex justify-between items-start gap-4">
                           <p className="font-semibold text-gray-700 w-1/3">{key}</p>
@@ -368,6 +373,7 @@ export default function Home() {
                       )}
                     </div>
                   );
+        
                 })}
               </div>
             </div>
