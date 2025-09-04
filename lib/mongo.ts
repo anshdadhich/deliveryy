@@ -4,7 +4,6 @@ const MONGODB_URL = process.env.DATABASE_URL as string;
 
 let client: MongoClient | null = null;
 
-
 export async function connectDB(): Promise<MongoClient> {
   if (!client) {
     client = new MongoClient(MONGODB_URL);
