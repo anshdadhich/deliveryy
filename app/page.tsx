@@ -376,40 +376,51 @@ export default function Home() {
       )}
 
       {/* PAGINATION */}
-      <div className="flex flex-wrap justify-between items-center mt-4 gap-4">
-        <Button variant="outline" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-          ⬅ Previous
-        </Button>
+     <div className="flex flex-col sm:flex-row sm:justify-between items-center mt-4 gap-2 sm:gap-4">
+  {/* Previous Button */}
+  <Button
+    variant="outline"
+    disabled={page <= 1}
+    className="w-full sm:w-auto"
+    onClick={() => setPage((p) => p - 1)}
+  >
+    ⬅ Previous
+  </Button>
 
-        <div className="flex-1 flex justify-center">
-          <span className="text-sm text-gray-600">
-            Page {page} of {totalPages}
-          </span>
-        </div>
+  {/* Page info */}
+  <div className="my-2 sm:my-0 text-sm text-gray-600 text-center flex-1 sm:flex-none">
+    Page {page} of {totalPages}
+  </div>
 
-        <div className="flex items-center gap-2">
-          <Select
-            value={limit.toString()}
-            onValueChange={(val) => {
-              setLimit(Number(val));
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="w-[140px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="50">50 / page</SelectItem>
-              <SelectItem value="100">100 / page</SelectItem>
-              <SelectItem value="200">200 / page</SelectItem>
-            </SelectContent>
-          </Select>
+  {/* Limit selector + Next Button */}
+  <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+    <Select
+      value={limit.toString()}
+      onValueChange={(val) => {
+        setLimit(Number(val));
+        setPage(1);
+      }}
+    >
+      <SelectTrigger className="w-full sm:w-[140px]">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="50">50 / page</SelectItem>
+        <SelectItem value="100">100 / page</SelectItem>
+        <SelectItem value="200">200 / page</SelectItem>
+      </SelectContent>
+    </Select>
 
-          <Button variant="outline" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
-            Next ➡
-          </Button>
-        </div>
-      </div>
+    <Button
+      variant="outline"
+      disabled={page >= totalPages}
+      className="w-full sm:w-auto"
+      onClick={() => setPage((p) => p + 1)}
+    >
+      Next ➡
+    </Button>
+  </div>
+</div>
     </main>
   );
 }
