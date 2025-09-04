@@ -3,7 +3,7 @@ import { connectDB, SHIPMENTS_COLLECTION } from "@/lib/mongo";
 import * as XLSX from "xlsx";
 import { Document } from "mongodb";
 
-const SHIPMENT_WEBHOOK_URL = = process.env.SHIPMENT_WEBHOOK_URL as string; 
+const SHIPMENT_WEBHOOK_URL = process.env.SHIPMENT_WEBHOOK_URL as string; 
 
 export async function POST(req: Request) {
   try {
