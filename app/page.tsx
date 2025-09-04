@@ -277,9 +277,11 @@ export default function Home() {
                   <p className="text-gray-900">{shipment.DocketNo ?? "-"}</p>
                 </div>
 
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <p className="font-semibold text-gray-700">Delivery Partner:</p>
-                  <p className="text-gray-900">{shipment.DeliveryPartner ?? "-"}</p>
+                  <p className="text-gray-900 max-w-[200px] truncate" title={shipment.DeliveryPartner ?? "-"}>
+                   {shipment.DeliveryPartner ?? "-"}
+                  </p>
                 </div>
 
                 <div className="flex justify-between">
