@@ -310,7 +310,7 @@ export default function Home() {
       {selectedShipment && (
         <Dialog open={!!selectedShipment} onOpenChange={() => setSelectedShipment(null)}>
           <DialogContent className="w-full max-w-4xl max-h-[90vh] rounded-2xl border shadow-2xl overflow-hidden p-0">
-            <div className="w-full max-h-[90vh] overflow-y-auto overflow-x-hidden p-6 bg-white">
+            <div className="w-full max-h-[90vh] overflow-y-auto overflow-x-hidden p-6 bg-white border-4 rounded-xl">
               <DialogHeader className="mb-4">
                 <DialogTitle className="text-xl font-semibold">Shipment Details</DialogTitle>
               </DialogHeader>
