@@ -165,7 +165,7 @@ export default function Home() {
             />
             <Button
               type="submit"
-              className="bg-black text-white px-6 py-2 rounded-lg border-2 border-transparent hover:bg-white hover:text-black hover:border-black shadow-md transition-all duration-300 transform hover:scale-102 active:scale-95"
+              className="bg-black text-white px-6 py-2 rounded-lg border-2 border-transparent hover:bg-white hover:text-black hover:border-black shadow-md transition-all duration-200 transform hover:scale-102 active:scale-95"
               disabled={uploading}
             >
               {uploading ? "⏳ Uploading..." : "Upload"}
@@ -256,7 +256,7 @@ export default function Home() {
             fetchStats();
           }}
           variant="outline"
-          className="bg-black text-white px-3 py-2 rounded-lg border-2 border-transparent hover:bg-white hover:text-black hover:border-black shadow-md transition-all duration-300 transform hover:scale-102 active:scale-95"
+          className="bg-black text-white px-3 py-2 rounded-lg border-2 border-transparent hover:bg-white hover:text-black hover:border-black shadow-md transition-all duration-200 transform hover:scale-102 active:scale-95"
         >
           Refresh
         </Button>
