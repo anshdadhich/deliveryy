@@ -140,7 +140,7 @@ export default function Home() {
       {/* UPLOAD CARD */}
       <Card>
         <CardHeader>
-          <CardTitle>📤 Upload Shipments CSV</CardTitle>
+          <CardTitle>📤 Upload Shipments File</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleUpload} className="flex flex-col md:flex-row gap-4 items-center">
