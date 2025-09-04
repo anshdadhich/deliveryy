@@ -5,14 +5,10 @@ import { Document } from "mongodb";
 
 const SHIPMENT_WEBHOOK_URL = process.env.SHIPMENT_WEBHOOK_URL as string;
 
-interface ShipmentRow extends Document {
-  [key: string]: string | number | undefined;
-}
-
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
-    const file = formData.get("file") as File | null;
+    const file = formData.get("file") as File;
 
     if (!file) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
@@ -26,11 +22,11 @@ export async function POST(req: Request) {
     const sheet = workbook.Sheets[sheetName];
 
     const rows = XLSX.utils
-      .sheet_to_json<ShipmentRow>(sheet, {
+      .sheet_to_json<Record<string, unknown>>(sheet, {
         raw: true,
         defval: "",
       })
-      .filter((row) => Object.keys(row).length > 0);
+      .filter((row) => Object.keys(row).length > 0) as Document[];
 
     const dateColumns = ["Date", "ShipmentDate", "DeliveryDate"];
 
@@ -46,7 +42,8 @@ export async function POST(req: Request) {
         } else if (dateColumns.includes(key) && typeof value === "string") {
           const match = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
           if (match) {
-            let [_, d, m, y] = match;
+            const [, d, m, yInitial] = match; // skip unused variable
+            let y = yInitial;
             if (y.length === 2) y = "20" + y;
             row[key] = `${d.padStart(2, "0")}/${m.padStart(2, "0")}/${y}`;
           }
@@ -57,7 +54,7 @@ export async function POST(req: Request) {
 
     const client = await connectDB();
     const db = client.db();
-    const collection = db.collection<ShipmentRow>(SHIPMENTS_COLLECTION);
+    const collection = db.collection(SHIPMENTS_COLLECTION);
 
     await collection.insertMany(cleanedRows);
 
@@ -69,7 +66,7 @@ export async function POST(req: Request) {
           body: JSON.stringify({ fileName: file.name }),
         });
         console.log(`Webhook triggered for file: ${file.name}`);
-      } catch (err: unknown) {
+      } catch (err) {
         console.error("❌ Webhook trigger failed:", err);
       }
     }, 8000);
@@ -81,7 +78,7 @@ export async function POST(req: Request) {
       webhookScheduled: true,
     });
   } catch (err: unknown) {
-    console.error("❌ Error in uploading the file", err);
+    console.error("❌ Error in uploading the file");
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
