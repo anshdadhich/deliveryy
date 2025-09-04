@@ -19,6 +19,7 @@ interface Shipment {
   DocketNo?: string;
   DeliveryPartner?: string;
   EcomStatus?: string;
+  delay?: string;
   [key: string]: string | number | object | null | undefined;
 }
 
@@ -296,6 +297,12 @@ export default function Home() {
                     {shipment.EcomStatus ?? "-"}
                   </p>
                 </div>
+                
+                 <div className="flex justify-between">
+                    <p className="font-semibold text-gray-700">Days Delayed:</p>
+                    <p className="text-gray-900">{shipment.delay ?? "-"}</p>
+                  </div>
+                
               </div>
             </Card>
           ))}
