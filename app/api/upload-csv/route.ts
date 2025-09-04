@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { connectDB, SHIPMENTS_COLLECTION } from "@/lib/mongo";
 import * as XLSX from "xlsx";
 import { Document } from "mongodb";
-import { SHIPMENT_WEBHOOK_URL } from "@/config/env";
+
+const SHIPMENT_WEBHOOK_URL = = process.env.SHIPMENT_WEBHOOK_URL as string; 
 
 export async function POST(req: Request) {
   try {
