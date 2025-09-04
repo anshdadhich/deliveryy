@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       })
       .filter((row) => Object.keys(row).length > 0) as Document[];
 
-    const dateColumns = ["Date", "ShipmentDate", "DeliveryDate"];
+    const dateColumns = ["Date", "ShipmentDate", "DeliveryDate","Date"];
 
     const cleanedRows = rows.map((row) => {
       Object.keys(row).forEach((key) => {
