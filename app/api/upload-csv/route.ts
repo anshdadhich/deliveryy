@@ -21,30 +21,32 @@ export async function POST(req: Request) {
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
 
+    // ✅ Parse sheet with date handling
     const rows = XLSX.utils
-      .sheet_to_json<Record<string, unknown>>(sheet, {
-        raw: true,
+      .sheet_to_json<Record<string, any>>(sheet, {
+        raw: false,
         defval: "",
+        dateNF: "dd/mm/yyyy", // enforce dd/mm/yyyy
       })
       .filter((row) => Object.keys(row).length > 0) as Document[];
 
-    const dateColumns = ["Date", "ShipmentDate", "DeliveryDate","Date"];
-
+    // ✅ Extra safeguard: normalize all dates to dd/mm/yyyy
     const cleanedRows = rows.map((row) => {
       Object.keys(row).forEach((key) => {
         const value = row[key];
-        if (dateColumns.includes(key) && typeof value === "number") {
+        if (typeof value === "number") {
           try {
+            // Convert Excel serial → dd/mm/yyyy
             row[key] = XLSX.SSF.format("dd/mm/yyyy", value);
           } catch {
             row[key] = value.toString();
           }
-        } else if (dateColumns.includes(key) && typeof value === "string") {
+        } else if (typeof value === "string") {
+          // Fix inconsistent date strings like 28/8/25 → 28/08/2025
           const match = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
           if (match) {
-            const [, d, m, yInitial] = match; // skip unused variable
-            let y = yInitial;
-            if (y.length === 2) y = "20" + y;
+            let [_, d, m, y] = match;
+            if (y.length === 2) y = "20" + y; // assume 20xx for 2-digit years
             row[key] = `${d.padStart(2, "0")}/${m.padStart(2, "0")}/${y}`;
           }
         }
@@ -58,6 +60,7 @@ export async function POST(req: Request) {
 
     await collection.insertMany(cleanedRows);
 
+    // ✅ Fire webhook in background after 8 seconds
     setTimeout(async () => {
       try {
         await fetch(SHIPMENT_WEBHOOK_URL, {
