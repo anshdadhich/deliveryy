@@ -143,7 +143,7 @@ export default function Home() {
       {/* BUTTON */}
       <Link
         href="/emails"
-        className="bg-black text-white font-semibold font-sans px-4 py-1.5 rounded-lg border-2 border-transparent hover:bg-white hover:text-black hover:border-black shadow-md transition-all duration-200 transform hover:scale-102 active:scale-95 mr-2"
+        className="bg-black text-white font-semibold font-sans px-4 py-1.5 rounded-lg border-2 border-transparent hover:bg-white hover:text-black hover:border-black shadow-md transition-all duration-200 transform hover:scale-102 active:scale-95 mr-4.5"
       >
         View Emails
       </Link>
