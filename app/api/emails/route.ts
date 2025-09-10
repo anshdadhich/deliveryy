@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongo";
 import { ObjectId,Filter,Document } from "mongodb";
 
-const EMAILS_COLLECTION = "DeliveryPartner_Emails";
+const EMAILS_COLLECTION = process.env.EMAILS_COLLECTION as string;
 
 export async function GET(req: Request) {
   try {
