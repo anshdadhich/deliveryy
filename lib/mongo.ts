@@ -13,5 +13,5 @@ export async function connectDB(): Promise<MongoClient> {
   return client;
 }
 
-export const SHIPMENTS_COLLECTION: string = "Shipments";
-export const SHIPMENTS_DELAYED_COLLECTION: string = "ShipmentDelayed";
+export const SHIPMENTS_COLLECTION: string = process.env.SHIPMENTS_COLLECTION as string;
+export const SHIPMENTS_DELAYED_COLLECTION: string = process.env.SHIPMENTS_DELAYED_COLLECTION as string;
