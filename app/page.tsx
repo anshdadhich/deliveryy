@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
+import Link from "next/link";
 
 import {
   Select,
@@ -19,7 +20,7 @@ interface Shipment {
   DocketNo?: string;
   DeliveryPartner?: string;
   EcomStatus?: string;
-  delay?: string;
+  delay?:number;
   [key: string]: string | number | object | null | undefined;
 }
 
@@ -132,16 +133,26 @@ export default function Home() {
 
   return (
     <main className="p-6 max-w-7xl mx-auto space-y-8 bg-gray-50 min-h-screen text-gray-900">
+    <div className="flex items-center justify-between mb-6">
       {/* HEADER */}
       <header>
         <h1 className="text-3xl font-bold">📊 Logistics Dashboard</h1>
         <p className="text-gray-500">Upload shipments → monitor delays & severity</p>
       </header>
+    
+      {/* BUTTON */}
+      <Link
+        href="/emails"
+        className="bg-black text-white font-semibold font-sans px-4 py-1.5 rounded-lg border-2 border-transparent hover:bg-white hover:text-black hover:border-black shadow-md transition-all duration-200 transform hover:scale-102 active:scale-95 mr-2"
+      >
+        View Emails
+      </Link>
+    </div>
 
       {/* UPLOAD CARD */}
       <Card>
         <CardHeader>
-          <CardTitle>📤 Upload Shipments File</CardTitle>
+          <CardTitle>📤 Upload Shipments CSV</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleUpload} className="flex flex-col md:flex-row gap-4 items-center">
@@ -256,7 +267,7 @@ export default function Home() {
             fetchStats();
           }}
           variant="outline"
-          className="bg-black text-white px-3 py-2 rounded-lg border-2 border-transparent hover:bg-white hover:text-black hover:border-black shadow-md transition-all duration-200 transform hover:scale-102 active:scale-95"
+          className="bg-black text-white px-3 py-2 rounded-lg border-2 border-transparent hover:bg-white hover:text-black hover:border-black shadow-md transition-all duration-300 transform hover:scale-102"
         >
           Refresh
         </Button>
@@ -277,17 +288,13 @@ export default function Home() {
                   <p className="text-gray-900">{shipment.DocketNo ?? "-"}</p>
                 </div>
 
-                <div className="flex justify-between items-center">
-                  <p className="font-semibold text-gray-700">Delivery Partner:</p>
-                  <p className="text-gray-900 max-w-[200px] truncate" title={shipment.DeliveryPartner ?? "-"}>
+               <div className="flex justify-between items-center">
+                 <p className="font-semibold text-gray-700">Delivery Partner:</p>
+                 <p className="text-gray-900 max-w-[200px] truncate" title={shipment.DeliveryPartner ?? "-"}>
                    {shipment.DeliveryPartner ?? "-"}
-                  </p>
-                </div>
+                 </p>
+               </div>
 
-                <div className="flex justify-between">
-                    <p className="font-semibold text-gray-700">Days Delayed:</p>
-                    <p className="text-gray-900">{shipment.delay ?? "-"}</p>
-                </div>
 
                 <div className="flex justify-between">
                   <p className="font-semibold text-gray-700">Ecom Status:</p>
@@ -304,7 +311,11 @@ export default function Home() {
                     {shipment.EcomStatus ?? "-"}
                   </p>
                 </div>
-                
+
+                 <div className="flex justify-between">
+                    <p className="font-semibold text-gray-700">Days Delayed:</p>
+                    <p className="text-gray-900">{shipment.delay ?? "-"}</p>
+                  </div>
               </div>
             </Card>
           ))}
@@ -352,7 +363,7 @@ export default function Home() {
                     }
                   }
 
-                  return (
+                 return (
                     <div
                       key={key}
                       className={`px-4 py-3 hover:bg-gray-200 transition-colors  ${
@@ -382,6 +393,7 @@ export default function Home() {
                       )}
                     </div>
                   );
+
                 })}
               </div>
             </div>
@@ -390,7 +402,7 @@ export default function Home() {
       )}
 
       {/* PAGINATION */}
-     <div className="flex flex-col sm:flex-row sm:justify-between items-center mt-4 gap-2 sm:gap-4">
+   <div className="flex flex-col sm:flex-row sm:justify-between items-center mt-4 gap-2 sm:gap-4">
   {/* Previous Button */}
   <Button
     variant="outline"
@@ -401,13 +413,13 @@ export default function Home() {
     ⬅ Previous
   </Button>
 
-  {/* Page info */}
-  <div className="my-2 sm:my-0 text-sm text-gray-600 text-center flex-1 sm:flex-none">
+  {/* Page Info */}
+  <div className="my-2 sm:my-0 text-sm text-gray-600 text-center">
     Page {page} of {totalPages}
   </div>
 
   {/* Limit selector + Next Button */}
-  <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-2 w-full sm:w-auto">
     <Select
       value={limit.toString()}
       onValueChange={(val) => {
@@ -415,7 +427,7 @@ export default function Home() {
         setPage(1);
       }}
     >
-      <SelectTrigger className="w-full sm:w-[140px]">
+      <SelectTrigger className="w-full sm:w-[120px]">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
@@ -435,6 +447,7 @@ export default function Home() {
     </Button>
   </div>
 </div>
+
     </main>
   );
 }
