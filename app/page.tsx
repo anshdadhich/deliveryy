@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import  DownloadTemplate from "../components/ui/DownloadTemplate";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -138,6 +139,10 @@ export default function Home() {
       <header>
         <h1 className="text-3xl font-bold">📊 Logistics Dashboard</h1>
         <p className="text-gray-500">Upload shipments → monitor delays & severity</p>
+        <div>
+      <h1>Logistics Dashboard</h1>
+      <DownloadTemplate />
+    </div>
       </header>
     
       {/* BUTTON */}
